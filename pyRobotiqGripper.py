@@ -427,7 +427,7 @@ class RobotiqGripper( mm.Instrument ):
         #Activate the gripper
         self.activate()
     
-    def goTo(self,position,speed=255,force=255):
+    def goTo(self,position,speed=255,force=255, wait=True):
         """Go to the position with determined speed and force.
         
         Args:
@@ -465,6 +465,15 @@ class RobotiqGripper( mm.Instrument ):
                                     position,
                                     speed * 0b100000000 + force])
         
+        if not wait:
+            self.readAll()
+            gOBJ=self.paramDic["gOBJ"]
+            if gOBJ==1 or gOBJ==2:
+                objectDetected=True
+            else:
+                objectDetected=False
+            return self.paramDic["gPO"], objectDetected
+
         #Waiting for activation to complete
         motionStartTime=time.time()
         motionCompleted=False
